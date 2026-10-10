@@ -73,14 +73,18 @@ ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ### 3. Install Dependencies & Run
 
 For Python Backend:
-1. python -m venv venv
-2. source venv/bin/activate  (On Windows: venv\Scripts\activate)
-3. pip install -r requirements.txt
-4. python app.py
+```bash
+python -m venv venv
+source venv/bin/activate  (On Windows: venv\Scripts\activate)
+pip install -r requirements.txt
+python app.py
+'''
 
 For Node / Frontend:
-1. npm install
-2. npm run dev
+```bash
+npm install
+npm run dev
+'''
 
 ---
 
