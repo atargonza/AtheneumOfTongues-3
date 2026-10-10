@@ -93,4 +93,4 @@ npm run dev
 * Anne Argonza — [What Anne worked on]
 * Nathan Mesia — [What Nathan worked on]
 * Azka Faisal — [What Azka worked on]
-* Mico Castaneda — [What Mico worked on]
+* Michael Castaneda — [What Michael worked on]
