@@ -45,37 +45,45 @@ Language learning can be boring, and people want to be able to apply language le
 Follow these steps to run the project on your local machine.
 
 ### Prerequisites
-- Python 3.9+ or Node.js (v18+)
-- API Keys for **Gemini** and **ElevenLabs**
+
+* Python 3.9+ or Node.js (v18+)
+* API Keys for Google Gemini and ElevenLabs
+
+---
 
 ### 1. Clone the Repository
-```bash
-git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+
+git clone https://github.com/your-username/your-repo-name.git
 cd your-repo-name
 
-### 2. Set up environment variables
-Create a .env file in the root directory:
+---
+
+### 2. Set Up Environment Variables
+
+Create a file named .env in the root directory:
+
 GEMINI_API_KEY=your_gemini_api_key_here
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 
+---
+
 ### 3. Install Dependencies & Run
-Create and activate virtual environment:
-For Python backend:
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-Install dependencies:
-pip install -r requirements.txt
-
-Run app:
-python app.py
+For Python Backend:
+1. python -m venv venv
+2. source venv/bin/activate  (On Windows: venv\Scripts\activate)
+3. pip install -r requirements.txt
+4. python app.py
 
 For Node / Frontend:
-npm install
-npm run dev
+1. npm install
+2. npm run dev
+
+---
 
 ## Our Team
-**Anne Argonza: ** [What Anne worked on]
-**Nathan Mesia: ** [What Nathan worked on]
-**Azka Faisal: ** [What Azka worked on]
-**Mico Castaneda: ** [What Mico worked on]
+
+* Anne Argonza — [What Anne worked on]
+* Nathan Mesia — [What Nathan worked on]
+* Azka Faisal — [What Azka worked on]
+* Mico Castaneda — [What Mico worked on]
