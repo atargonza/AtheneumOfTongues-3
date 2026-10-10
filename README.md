@@ -90,7 +90,7 @@ npm run dev
 
 ## Our Team
 
-* Anne Argonza — [What Anne worked on]
-* Nathan Mesia — [What Nathan worked on]
-* Azka Faisal — [What Azka worked on]
-* Michael Castaneda — [What Michael worked on]
+* **Anne Argonza** - [What Anne worked on]
+* **Nathan Mesia** - [What Nathan worked on]
+* **Azka Faisal** - [What Azka worked on]
+* **Michael Castaneda** - [What Michael worked on]
