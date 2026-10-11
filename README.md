@@ -8,7 +8,7 @@ Language learning can be boring, and people want to be able to apply language le
 
 ## 📽️ Demo & Screenshots
 
-- **Live Demo / Devpost Link:** [Link to Devpost, YouTube, or Vercel/Render deployment]
+- **Live Demo / Devpost Link:** https://devpost.com/software/atheneumoftongues
 
 <!-- Add a screenshot or GIF here if you have one! -->
 ![App Screenshot](<Screenshot 2026-10-11 091909.png>)
