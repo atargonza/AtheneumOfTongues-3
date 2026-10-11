@@ -18,8 +18,8 @@ Language learning can be boring, and people want to be able to apply language le
 
 ## 💡 The Problem & Solution
 
-* **The Problem:** [Describe the problem in 1–2 sentences. What pain point are you solving?]
-* **Our Solution:** [Describe how your app solves this using AI in 1–2 sentences.]
+* **The Problem:** Traditional language learning feels like extra work and separates study from daily entertainment, leading to boredom and inconsistent practice. 
+* **Our Solution:** AtheneumOfTongues³ solves this by letting users turn any media they already enjoy into personalized, interactive lessons featuring real-time translations, automated flashcards, and comprehension checks.
 
 ---
 
@@ -90,7 +90,7 @@ npm run dev
 
 ## Our Team
 
-* **Anne Argonza** - [What Anne worked on]
-* **Nathan Mesia** - [What Nathan worked on]
-* **Azka Faisal** - [What Azka worked on]
-* **Michael Castaneda** - [What Michael worked on]
+* **Anne Argonza** - Backend Developer / Media Parsing & Ingestion Service / Gemini AI Translation & Grammar Service / API Integration
+* **Nathan Mesia** - Frontend Developer / Home & Ingestion Interface
+* **Azka Faisal** - UI/UX Designer / Ideation Lead
+* **Michael Castaneda** - Backend Developer / Database Schema
