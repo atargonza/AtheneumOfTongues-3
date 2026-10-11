@@ -9,6 +9,7 @@ Language learning can be boring, and people want to be able to apply language le
 ## 📽️ Demo & Screenshots
 
 - **Live Demo / Devpost Link:** https://devpost.com/software/atheneumoftongues
+- **Pitch Deck:** https://www.canva.com/design/DAHXnxfVMxg/v9AzX2xqi9Ly4oEtN0kMrA/view?utm_content=DAHXnxfVMxg&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hdac2aa96a8#1
 
 <!-- Add a screenshot or GIF here if you have one! -->
 ![App Screenshot](<Screenshot 2026-10-11 091909.png>)
