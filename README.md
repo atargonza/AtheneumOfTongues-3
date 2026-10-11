@@ -12,7 +12,7 @@ Language learning can be boring, and people want to be able to apply language le
 - **Pitch Deck / Slides:** [Link to Google Slides or Figma]
 
 <!-- Add a screenshot or GIF here if you have one! -->
-![App Screenshot](<img width="671" height="338" alt="Screenshot 2026-10-11 091909" src="https://github.com/user-attachments/assets/ec1072f0-d699-468a-8c13-8d54dfacc452" />)
+![App Screenshot](<Screenshot 2026-10-11 091909.png>)
 
 ---
 
