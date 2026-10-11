@@ -1,92 +1,192 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useArticle } from "@/src/context/ArticleContext";
+import { debounce } from "@/src/lib/debounce";
+import {
+  addFlashcard,
+  listDecks,
+  translateWord,
+} from "@/src/services/api";
+import { TARGET_LANGUAGES, type TranslationResult } from "@/src/types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-const sampleTitle = "El aceite de coco: ¿es realmente saludable?";
+const WORD_SPLIT = /(\s+)/;
+const STRIP_EDGES = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}'’-]+$/gu;
 
-const sampleArticle = `En los últimos años, el coco y el aceite de coco se han puesto de moda. A menudo se presentan como alimentos saludables, pero sus beneficios no siempre son tan claros. Para comprender sus efectos, debemos analizar sus propiedades y cómo influyen en nuestra alimentación diaria.
-
-El aceite de coco contiene una gran cantidad de grasas saturadas. Aunque algunas personas lo consideran una alternativa natural a otros aceites, es importante consumirlo con moderación y conocer las recomendaciones nutricionales.
-
-Una alimentación equilibrada incluye una variedad de frutas, verduras, cereales integrales y fuentes saludables de grasas. Ningún alimento por sí solo garantiza una buena salud.`;
-
-type SavedWord = {
-  word: string;
-  meaning: string;
-};
+function cleanToken(raw: string): string {
+  return raw.replace(STRIP_EDGES, "");
+}
 
 export default function ViewerPage() {
-  const [article, setArticle] = useState(sampleArticle);
-  const [title, setTitle] = useState(sampleTitle);
-  const [articleUrl, setArticleUrl] = useState("your-article.example");
-  const [selectedWord, setSelectedWord] = useState("");
-  const [translation, setTranslation] = useState("");
-  const [savedWords, setSavedWords] = useState<SavedWord[]>([]);
+  const {
+    extractedText,
+    sourceLabel,
+    title,
+    targetLanguage,
+    hydrated,
+    setArticle,
+  } = useArticle();
+  const [selectedText, setSelectedText] = useState("");
+  const [result, setResult] = useState<TranslationResult | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [error, setError] = useState("");
+  const [decks, setDecks] = useState<string[]>([]);
+  const [deckName, setDeckName] = useState("General");
+  const [saveMessage, setSaveMessage] = useState("");
+  const [popover, setPopover] = useState<{ top: number; left: number } | null>(
+    null
+  );
+  const articleRef = useRef<HTMLDivElement>(null);
 
-  // Read the URL only after the component mounts in the browser.
-  // This prevents the server/client hydration mismatch.
-  
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
+  useEffect(() => {
+    listDecks()
+      .then((names) => {
+        setDecks(names);
+        if (names[0]) setDeckName(names[0]);
+      })
+      .catch(() => {
+        /* decks can stay empty until a card is saved */
+      });
+  }, []);
 
-  setArticleUrl(params.get("url") || "your-article.example");
+  const runTranslate = useCallback(
+    async (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
 
-  const source = params.get("source");
+      setIsTranslating(true);
+      setError("");
+      setSaveMessage("");
 
-  if (source === "file") {
-    const uploadedText = sessionStorage.getItem("articleText");
+      try {
+        const translation = await translateWord(trimmed, targetLanguage);
+        setResult(translation);
+      } catch (err) {
+        setResult(null);
+        setError(
+          err instanceof Error ? err.message : "Translation failed."
+        );
+      } finally {
+        setIsTranslating(false);
+      }
+    },
+    [targetLanguage]
+  );
 
-    if (uploadedText) {
-      setArticle(uploadedText);
-      setTitle("Your uploaded article");
+  const debouncedTranslate = useMemo(
+    () =>
+      debounce((text: string) => {
+        void runTranslate(text);
+      }, 250),
+    [runTranslate]
+  );
+
+  useEffect(() => {
+    return () => debouncedTranslate.cancel();
+  }, [debouncedTranslate]);
+
+  function selectText(text: string, origin?: HTMLElement) {
+    const cleaned = cleanToken(text) || text.trim();
+    if (!cleaned) return;
+    setSelectedText(cleaned);
+    setResult(null);
+    setError("");
+    setSaveMessage("");
+
+    if (origin && articleRef.current) {
+      const articleBox = articleRef.current.getBoundingClientRect();
+      const wordBox = origin.getBoundingClientRect();
+      setPopover({
+        top: wordBox.bottom - articleBox.top + articleRef.current.scrollTop + 8,
+        left: Math.min(
+          Math.max(8, wordBox.left - articleBox.left),
+          Math.max(8, articleRef.current.clientWidth - 328)
+        ),
+      });
     }
   }
-}, []);
 
-
-  function handleWordClick(rawWord: string) {
-    const word = rawWord.replace(
-      /^[^\p{L}\p{N}]+|[^\p{L}\p{N}'’-]+$/gu,
-      ""
-    );
-
-    if (!word) return;
-
-    setSelectedWord(word);
-
-    const existingWord = savedWords.find(
-      (item) => item.word.toLowerCase() === word.toLowerCase()
-    );
-
-    setTranslation(existingWord?.meaning ?? "");
+  function handleWordClick(
+    event: React.MouseEvent<HTMLButtonElement>,
+    rawWord: string
+  ) {
+    selectText(rawWord, event.currentTarget);
   }
 
-  function saveWord() {
-    if (!selectedWord || !translation.trim()) return;
+  function handleMouseUp() {
+    const selection = window.getSelection();
+    const raw = selection?.toString().trim() ?? "";
+    if (!raw || !articleRef.current) return;
+    if (!selection?.anchorNode || !articleRef.current.contains(selection.anchorNode)) {
+      return;
+    }
+    if (!raw.includes(" ") && !raw.includes("\n")) return;
 
-    setSavedWords((previous) => {
-      const exists = previous.some(
-        (item) =>
-          item.word.toLowerCase() === selectedWord.toLowerCase()
-      );
-
-      if (exists) {
-        return previous.map((item) =>
-          item.word.toLowerCase() === selectedWord.toLowerCase()
-            ? { ...item, meaning: translation.trim() }
-            : item
-        );
-      }
-
-      return [
-        ...previous,
-        {
-          word: selectedWord,
-          meaning: translation.trim(),
-        },
-      ];
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const articleBox = articleRef.current.getBoundingClientRect();
+    setSelectedText(raw.replace(/\s+/g, " "));
+    setResult(null);
+    setError("");
+    setSaveMessage("");
+    setPopover({
+      top: rect.bottom - articleBox.top + articleRef.current.scrollTop + 8,
+      left: Math.max(8, rect.left - articleBox.left),
     });
+  }
+
+  function handleTranslateClick() {
+    if (!selectedText) return;
+    debouncedTranslate(selectedText);
+  }
+
+  async function handleAddToFlashcards() {
+    if (!result) return;
+    const name = deckName.trim() || "General";
+    try {
+      await addFlashcard({
+        word: result.original,
+        translation: result.translation,
+        deck_name: name,
+      });
+      if (!decks.includes(name)) {
+        setDecks((previous) => [...previous, name]);
+      }
+      setSaveMessage(`Saved to ${name}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save flashcard.");
+    }
+  }
+
+  if (!hydrated) {
+    return (
+      <main className="reader-page">
+        <header className="reader-header">
+          <a className="reader-brand" href="/">
+            Atheneum of Tongues<sup>3</sup>
+          </a>
+        </header>
+      </main>
+    );
+  }
+
+  if (!extractedText) {
+    return (
+      <main className="reader-page">
+        <header className="reader-header">
+          <a className="reader-brand" href="/">
+            Atheneum of Tongues<sup>3</sup>
+          </a>
+        </header>
+        <div className="empty-word-state">
+          <h3>No article loaded</h3>
+          <p>Upload a file or paste a URL on the home page to start reading.</p>
+          <a className="reader-back-link" href="/">
+            ← Back to the atheneum
+          </a>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -96,13 +196,10 @@ useEffect(() => {
           Atheneum of Tongues<sup>3</sup>
         </a>
 
-        <span className="reader-header-label">
-          MEDIA READER
-        </span>
+        <span className="reader-header-label">MEDIA READER</span>
       </header>
 
       <div className="reader-layout">
-        {/* LEFT SIDE: ARTICLE */}
         <section className="article-side">
           <div className="mini-browser">
             <div className="browser-toolbar">
@@ -112,201 +209,191 @@ useEffect(() => {
                 <span />
               </div>
 
-              <div className="browser-address">
-                {articleUrl}
-              </div>
+              <div className="browser-address">{sourceLabel || "article"}</div>
             </div>
 
-            <div className="mini-browser-content">
-              <p className="site-category">
-                ARTICLES · CULTURE · HEALTH
-              </p>
+            <div
+              className="mini-browser-content"
+              ref={articleRef}
+              onMouseUp={handleMouseUp}
+            >
+              <p className="site-category">ARTICLES · INTERACTIVE READER</p>
 
-              <h1 className="mini-article-title">
-                {title}
-              </h1>
+              <h1 className="mini-article-title">{title || "Your article"}</h1>
 
               <p className="mini-article-meta">
-                Interactive reading mode · Select any word
+                Click a word or highlight a phrase, then press Translate.
               </p>
 
               <div className="mini-article-body">
-                {article.split("\n").map((paragraph, paragraphIndex) => (
+                {extractedText.split("\n").map((paragraph, paragraphIndex) => (
                   <p key={paragraphIndex}>
-                    {paragraph
-                      .split(/(\s+)/)
-                      .map((part, index) => {
-                        // Preserve whitespace between words.
-                        if (!part.trim()) {
-                          return <span key={index}>{part}</span>;
-                        }
+                    {paragraph.split(WORD_SPLIT).map((part, index) => {
+                      if (!part.trim()) {
+                        return <span key={index}>{part}</span>;
+                      }
 
-                        const cleanWord = part.replace(
-                          /^[^\p{L}\p{N}]+|[^\p{L}\p{N}'’-]+$/gu,
-                          ""
-                        );
+                      const cleaned = cleanToken(part);
+                      const isSelected =
+                        cleaned.toLowerCase() === selectedText.toLowerCase();
 
-                        const isSelected =
-                          cleanWord.toLowerCase() ===
-                          selectedWord.toLowerCase();
-
-                        return (
-                          <button
-                            key={index}
-                            type="button"
-                            className={`article-word ${
-                              isSelected ? "selected-word" : ""
-                            }`}
-                            onClick={() => handleWordClick(part)}
-                            aria-label={`Translate ${cleanWord}`}
-                            title={`Click to translate: ${cleanWord}`}
-                          >
-                            {part}
-                          </button>
-                        );
-                      })}
+                      return (
+                        <button
+                          key={index}
+                          type="button"
+                          className={`article-word ${
+                            isSelected ? "selected-word" : ""
+                          }`}
+                          onClick={(event) => handleWordClick(event, part)}
+                          aria-label={`Select ${cleaned}`}
+                        >
+                          {part}
+                        </button>
+                      );
+                    })}
                   </p>
                 ))}
               </div>
 
-              {/* Temporary editing controls for testing */}
-              <div className="article-edit">
-                <details>
-                  <summary>Try a different article text</summary>
-
-                  <label htmlFor="article-title-input">
-                    Article title
-                  </label>
-
-                  <input
-                    id="article-title-input"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                  />
-
-                  <label htmlFor="article-text-input">
-                    Article text
-                  </label>
-
-                  <textarea
-                    id="article-text-input"
-                    value={article}
-                    onChange={(event) => {
-                      setArticle(event.target.value);
-                      setSelectedWord("");
-                      setTranslation("");
-                    }}
-                  />
-                </details>
-              </div>
+              {popover && selectedText && (
+                <div
+                  className="translation-popover"
+                  style={{ top: popover.top, left: popover.left }}
+                >
+                  <p className="word-label">SELECTED</p>
+                  <p className="popover-original">{selectedText}</p>
+                  <button
+                    type="button"
+                    className="save-word-button"
+                    onClick={handleTranslateClick}
+                    disabled={isTranslating}
+                  >
+                    {isTranslating ? "Translating…" : "Translate"}
+                  </button>
+                  {result && (
+                    <>
+                      <p className="word-label">TRANSLATION</p>
+                      <p className="popover-translation">{result.translation}</p>
+                      <label className="translation-label" htmlFor="deck-select">
+                        Deck
+                      </label>
+                      <input
+                        id="deck-select"
+                        className="translation-input"
+                        list="deck-options"
+                        value={deckName}
+                        onChange={(event) => setDeckName(event.target.value)}
+                        placeholder="Existing or new deck"
+                      />
+                      <datalist id="deck-options">
+                        {decks.map((name) => (
+                          <option key={name} value={name} />
+                        ))}
+                      </datalist>
+                      <button
+                        type="button"
+                        className="save-word-button"
+                        onClick={() => void handleAddToFlashcards()}
+                      >
+                        Add to Flashcards
+                      </button>
+                      {saveMessage && (
+                        <p className="saved-message">{saveMessage}</p>
+                      )}
+                    </>
+                  )}
+                  {error && (
+                    <p role="alert" className="form-error">
+                      {error}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>
 
-        {/* RIGHT SIDE: WORD EXPLORER */}
         <aside className="translation-side">
           <div className="translation-card">
             <div className="translation-heading">
               <span className="translation-icon">文</span>
-
               <div>
-                <p className="translation-eyebrow">
-                  YOUR VOCABULARY
-                </p>
-
+                <p className="translation-eyebrow">YOUR VOCABULARY</p>
                 <h2>Word explorer</h2>
               </div>
             </div>
 
-            {!selectedWord ? (
+            <label className="translation-label" htmlFor="viewer-language">
+              Translate into
+            </label>
+            <select
+              id="viewer-language"
+              className="translation-input"
+              value={targetLanguage}
+              onChange={(event) =>
+                setArticle({ targetLanguage: event.target.value })
+              }
+            >
+              {TARGET_LANGUAGES.map((language) => (
+                <option key={language} value={language}>
+                  {language}
+                </option>
+              ))}
+            </select>
+
+            {!selectedText ? (
               <div className="empty-word-state">
                 <span className="word-placeholder-icon">Aa</span>
-
                 <h3>Discover a new word</h3>
-
                 <p>
-                  Click any word in the article to explore its
-                  meaning and add it to your vocabulary.
+                  Click any word or highlight a phrase, then click Translate.
+                  Cached words skip Gemini.
                 </p>
               </div>
             ) : (
               <div className="word-details">
-                <p className="word-label">SELECTED WORD</p>
-
-                <h3 className="selected-word-title">
-                  {selectedWord}
-                </h3>
-
-                <label
-                  className="translation-label"
-                  htmlFor="translation-input"
-                >
-                  Translation or meaning
-                </label>
-
-                <input
-                  id="translation-input"
-                  className="translation-input"
-                  value={translation}
-                  onChange={(event) =>
-                    setTranslation(event.target.value)
-                  }
-                  placeholder="Enter a translation..."
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") saveWord();
-                  }}
-                />
-
+                <p className="word-label">SELECTED</p>
+                <h3 className="selected-word-title">{selectedText}</h3>
+                {result && (
+                  <>
+                    <p className="word-label">TRANSLATION</p>
+                    <p className="selected-word-title">{result.translation}</p>
+                    <label className="translation-label" htmlFor="sidebar-deck">
+                      Deck
+                    </label>
+                    <input
+                      id="sidebar-deck"
+                      className="translation-input"
+                      list="deck-options"
+                      value={deckName}
+                      onChange={(event) => setDeckName(event.target.value)}
+                      placeholder="Existing or new deck"
+                    />
+                    <button
+                      type="button"
+                      className="save-word-button"
+                      onClick={() => void handleAddToFlashcards()}
+                    >
+                      Add to Flashcards
+                    </button>
+                    {saveMessage && (
+                      <p className="saved-message">{saveMessage}</p>
+                    )}
+                  </>
+                )}
                 <button
                   type="button"
                   className="save-word-button"
-                  onClick={saveWord}
-                  disabled={!translation.trim()}
+                  onClick={handleTranslateClick}
+                  disabled={isTranslating}
                 >
-                  + Save to vocabulary
+                  {isTranslating ? "Translating…" : "Translate"}
                 </button>
-
-                {savedWords.some(
-                  (item) =>
-                    item.word.toLowerCase() ===
-                    selectedWord.toLowerCase()
-                ) && (
-                  <p className="saved-message">
-                    ✓ Saved to your vocabulary
-                  </p>
-                )}
+                <a className="reader-back-link" href="/flashcards">
+                  Open flashcards →
+                </a>
               </div>
             )}
-
-            <div className="saved-vocabulary">
-              <div className="saved-vocabulary-heading">
-                <h3>Saved words</h3>
-                <span>{savedWords.length}</span>
-              </div>
-
-              {savedWords.length === 0 ? (
-                <p className="saved-empty">
-                  Words you save will appear here.
-                </p>
-              ) : (
-                <ul className="saved-list">
-                  {savedWords.map((item) => (
-                    <li key={item.word}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedWord(item.word);
-                          setTranslation(item.meaning);
-                        }}
-                      >
-                        <span>{item.word}</span>
-                        <span>{item.meaning}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
           </div>
         </aside>
       </div>

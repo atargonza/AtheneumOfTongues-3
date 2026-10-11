@@ -8,11 +8,11 @@ Language learning can be boring, and people want to be able to apply language le
 
 ## 📽️ Demo & Screenshots
 
-- **Live Demo / Video Link:** [Link to Devpost, YouTube, or Vercel/Render deployment]
-- **Pitch Deck / Slides:** [Link to Google Slides or Figma]
+- **Live Demo / Devpost Link:** https://devpost.com/software/atheneumoftongues
+- **Pitch Deck:** https://www.canva.com/design/DAHXnxfVMxg/v9AzX2xqi9Ly4oEtN0kMrA/view?utm_content=DAHXnxfVMxg&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hdac2aa96a8#1
 
 <!-- Add a screenshot or GIF here if you have one! -->
-![App Screenshot](https://via.placeholder.com/800x400.png?text=Add+a+Screenshot+or+GIF+Here)
+![App Screenshot](<Screenshot 2026-10-11 091909.png>)
 
 ---
 
@@ -36,7 +36,6 @@ Language learning can be boring, and people want to be able to apply language le
 - **AI & APIs:** [Google Gemini API](https://ai.google.dev/), [ElevenLabs API](https://elevenlabs.io/)
 - **Frontend:** Next.js / React / HTML/CSS
 - **Backend:** Python (FastAPI / Flask)
-- **Deployment:** [e.g., Vercel / Render / Local]
 
 ---
 
@@ -65,7 +64,6 @@ cd your-repo-name
 Create a file named .env in the root directory:
 ```bash
 GEMINI_API_KEY=your_gemini_api_key_here
-ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
 
 ---
