@@ -1,8 +1,8 @@
 # AtheneumOfTongues-3
 Language learning can be boring, and people want to be able to apply language learning to their everyday tasks. AtheneumOfTongues^3 takes your everyday media and turns it into a consistent language learning opportunity.
 
-> **[One-Sentence Elevator Pitch]**  
-> *Example: An interactive voice assistant that turns dry textbook chapters into engaging, personalized podcast episodes on demand.*
+> **Atheneum can triple your tongues, and turn it into tongue tongue tongues!**  
+> *Turn your textbook, notes, resumes, and weekly newsletters into invaluable language learning opportunities. Quick and Consistent. Embed language learning in your every day routine through AtheneumOfTongues^3.*
 
 ---
 
@@ -27,15 +27,15 @@ Language learning can be boring, and people want to be able to apply language le
 
 - 🎙️ **Voice AI Generation:** Powered by **ElevenLabs** to deliver natural, human-like voice synthesis.
 - 🧠 **Smart Context Processing:** Leverages **Google Gemini API** for fast, high-accuracy reasoning and content transformation.
-- ⚡ **Real-time Interaction:** [Add another feature here, e.g., Fast responses, custom audio downloads, interactive controls].
+- ⚡ **Real-time Interaction:** Fast parsing and translation of media in a chosen language, and easily accessible implementation of reinforcement learning through flashcards and quizzes for phrases and words contained.
 
 ---
 
 ## 🛠️ Tech Stack & APIs Used
 
 - **AI & APIs:** [Google Gemini API](https://ai.google.dev/), [ElevenLabs API](https://elevenlabs.io/)
-- **Frontend:** [e.g., React / Next.js / Streamlit / HTML/CSS]
-- **Backend:** [e.g., Python (FastAPI / Flask) / Node.js]
+- **Frontend:** Next.js / React / HTML/CSS
+- **Backend:** Python (FastAPI / Flask)
 - **Deployment:** [e.g., Vercel / Render / Local]
 
 ---
@@ -46,7 +46,7 @@ Follow these steps to run the project on your local machine.
 
 ### Prerequisites
 
-* Python 3.9+ or Node.js (v18+)
+* Python 3.9+
 * API Keys for Google Gemini and ElevenLabs
 
 ---
