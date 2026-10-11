@@ -1,9 +1,14 @@
-
 "use client";
 
+import { useArticle } from "@/src/context/ArticleContext";
+import { parseUrl, uploadFile } from "@/src/services/api";
+import { TARGET_LANGUAGES } from "@/src/types";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 export default function HomePage() {
+  const router = useRouter();
+  const { targetLanguage, setArticle } = useArticle();
   const [inputMode, setInputMode] = useState<"url" | "file">("url");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState("");
@@ -13,54 +18,46 @@ export default function HomePage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-
-    if (inputMode === "url") {
-      const form = event.currentTarget;
-      const urlInput = form.elements.namedItem("url") as HTMLInputElement;
-      const url = urlInput.value.trim();
-
-      if (!url) {
-        setError("Please enter an article URL.");
-        return;
-      }
-
-      window.location.href = `/viewer?url=${encodeURIComponent(url)}`;
-      return;
-    }
-
-    if (!selectedFile) {
-      setError("Please choose a PDF or TXT file.");
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
+      if (inputMode === "url") {
+        const form = event.currentTarget;
+        const urlInput = form.elements.namedItem("url") as HTMLInputElement;
+        const url = urlInput.value.trim();
 
-      // This endpoint must be implemented by your backend.
-      const response = await fetch("/api/upload-article", {
-        method: "POST",
-        body: formData,
+        if (!url) {
+          setError("Please enter an article URL.");
+          return;
+        }
+
+        const result = await parseUrl(url);
+        setArticle({
+          extractedText: result.extracted_text,
+          sourceLabel: result.url,
+          title: "Article",
+        });
+        router.push("/viewer");
+        return;
+      }
+
+      if (!selectedFile) {
+        setError("Please choose a PDF or TXT file.");
+        return;
+      }
+
+      const result = await uploadFile(selectedFile);
+      setArticle({
+        extractedText: result.extracted_text,
+        sourceLabel: result.filename,
+        title: result.filename,
       });
-
-      if (!response.ok) {
-        throw new Error("File upload is not connected to the backend yet.");
-      }
-
-      const result = await response.json();
-
-      if (result.text) {
-        sessionStorage.setItem("articleText", result.text);
-      }
-
-      window.location.href = "/viewer?source=file";
+      router.push("/viewer");
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : "Something went wrong while uploading the file."
+          : "Something went wrong while uploading."
       );
     } finally {
       setIsLoading(false);
@@ -85,10 +82,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <form
-          className="media-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="media-form" onSubmit={handleSubmit}>
           <label className="journey-text">
             Venture into the atheneum and start your learning journey.
           </label>
@@ -133,6 +127,7 @@ export default function HomePage() {
                 type="submit"
                 className="send-button"
                 aria-label="Open article"
+                disabled={isLoading}
               >
                 <img src="background.jpg" alt="" />
               </button>
@@ -170,6 +165,29 @@ export default function HomePage() {
             </div>
           )}
 
+          <div className="language-row">
+            <div className="language-field">
+              <label htmlFor="target-language">Translate into</label>
+              <select
+                id="target-language"
+                value={targetLanguage}
+                onChange={(event) =>
+                  setArticle({ targetLanguage: event.target.value })
+                }
+              >
+                {TARGET_LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {language}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {isLoading && inputMode === "url" && (
+            <p className="selected-file">Fetching article…</p>
+          )}
+
           {error && (
             <p role="alert" className="form-error">
               {error}
@@ -181,9 +199,7 @@ export default function HomePage() {
           Go to flashcards →
         </a>
 
-        <p className="footnote">
-          ai ai ai
-        </p>
+        <p className="footnote">ai ai ai</p>
       </section>
     </main>
   );

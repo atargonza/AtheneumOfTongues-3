@@ -585,6 +585,17 @@ h1 span {
   margin-top: 4px;
 }
 
+.form-error {
+  margin: 8px 0 0;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.selected-file {
+  color: var(--cream);
+}
+
 
 /* Interactive article reader */
 
@@ -678,11 +689,126 @@ h1 span {
 }
 
 .mini-browser-content {
+  position: relative;
   max-height: 72vh;
   overflow-y: auto;
   padding: clamp(18px, 3vw, 34px);
   color: #493b27;
   font-family: var(--font-ropa-sans), sans-serif;
+}
+
+.translation-popover {
+  position: absolute;
+  z-index: 20;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 14px;
+  border: 1px solid #c9b68f;
+  border-radius: 10px;
+  background: #eae1c8;
+  color: #49310d;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.popover-original,
+.popover-translation {
+  margin: 0 0 10px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.flashcards-page {
+  min-height: 100vh;
+  padding: 24px clamp(14px, 4vw, 48px) 40px;
+}
+
+.flashcards-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto 28px;
+}
+
+.flashcards-toolbar .input-tabs {
+  margin: 0;
+}
+
+.flashcards-toolbar .input-tabs button {
+  padding: 10px 14px;
+  border: 2px solid var(--cream);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  cursor: pointer;
+}
+
+.flashcards-toolbar .input-tabs button.active-tab {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+.deck-section {
+  max-width: 1100px;
+  margin: 0 auto 32px;
+}
+
+.deck-title {
+  margin: 0 0 16px;
+  color: var(--cream);
+  font-family: var(--font-ropa-sans), sans-serif;
+}
+
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.flashcard-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flip-card {
+  position: relative;
+  min-height: 140px;
+  padding: 0;
+  border: 1px solid #c9b68f;
+  border-radius: 12px;
+  background: #eae1c8;
+  color: #49310d;
+  font: inherit;
+  cursor: pointer;
+}
+
+.flip-face {
+  display: grid;
+  min-height: 140px;
+  padding: 20px;
+  place-items: center;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.flip-card.is-flipped .flip-front,
+.flip-card:not(.is-flipped) .flip-back {
+  display: none;
+}
+
+.card-status-button {
+  padding: 8px 10px;
+  border: 1px solid var(--cream);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .site-category {
