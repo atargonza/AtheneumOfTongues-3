@@ -36,7 +36,6 @@ Language learning can be boring, and people want to be able to apply language le
 - **AI & APIs:** [Google Gemini API](https://ai.google.dev/), [ElevenLabs API](https://elevenlabs.io/)
 - **Frontend:** Next.js / React / HTML/CSS
 - **Backend:** Python (FastAPI / Flask)
-- **Deployment:** [e.g., Vercel / Render / Local]
 
 ---
 
@@ -65,7 +64,6 @@ cd your-repo-name
 Create a file named .env in the root directory:
 ```bash
 GEMINI_API_KEY=your_gemini_api_key_here
-ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
 
 ---
