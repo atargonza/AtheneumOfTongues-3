@@ -78,8 +78,10 @@ export default function HomePage() {
           </p>
 
           <p className="title-tagline">
-            See the world in words, see words in the world.
+            "By the time you're done, we'll have tripled your tongues!"
           </p>
+          <img src="/tree.png" className="left-image" alt="" />
+          <img src="/tree.png" className="right-image" alt="" />
         </div>
 
         <form className="media-form" onSubmit={handleSubmit}>
@@ -129,7 +131,7 @@ export default function HomePage() {
                 aria-label="Open article"
                 disabled={isLoading}
               >
-                <img src="background.jpg" alt="" />
+                <img src="arrow.png" alt="" />
               </button>
             </div>
           ) : (
@@ -199,7 +201,6 @@ export default function HomePage() {
           Go to flashcards →
         </a>
 
-        <p className="footnote">ai ai ai</p>
       </section>
     </main>
   );
