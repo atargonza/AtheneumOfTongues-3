@@ -1,8 +1,8 @@
-# AtheneumOfTongues-3
+# AtheneumOfTongues³
 Language learning can be boring, and people want to be able to apply language learning to their everyday tasks. AtheneumOfTongues^3 takes your everyday media and turns it into a consistent language learning opportunity.
 
 > **Atheneum can triple your tongues, and turn it into tongue tongue tongues!**  
-> *Turn your textbook, notes, resumes, and weekly newsletters into invaluable language learning opportunities. Embed language learning in your every day routine through AtheneumOfTongues^3.*
+> *Turn your textbook, notes, resumes, and weekly newsletters into invaluable language learning opportunities. Embed language learning in your every day routine through AtheneumOfTongues³.*
 
 ---
 
