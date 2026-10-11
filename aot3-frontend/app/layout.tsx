@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Providers } from "@/src/components/Providers";
 import "./globals.css";
 
 const beauRivage = localFont({
@@ -32,7 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${loveLight.variable} ${ropaSans.variable} ${beauRivage.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
