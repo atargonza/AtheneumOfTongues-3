@@ -1145,3 +1145,25 @@ h1 span {
     min-height: auto;
   }
 }
+
+.left-image,
+.right-image {
+  position: absolute;
+  top: 0;
+  height: 125vh;
+  width: 800px;
+  object-fit: cover;
+  z-index: -1;
+
+  filter: brightness(0) saturate(100%)
+      invert(94%) sepia(12%) saturate(400%)
+      hue-rotate(330deg) brightness(102%);
+}
+
+.left-image {
+  left: -600px;
+}
+
+.right-image {
+  right: -500px;
+}
