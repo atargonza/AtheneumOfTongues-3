@@ -36,7 +36,7 @@ Language learning can be boring, and people want to be able to apply language le
 
 - **AI & APIs:** [Google Gemini API](https://ai.google.dev/), [ElevenLabs API](https://elevenlabs.io/)
 - **Frontend:** Next.js / React / HTML/CSS
-- **Backend:** Python (FastAPI / Flask)
+- **Backend:** Python (FastAPI)
 
 ---
 
